@@ -81,28 +81,59 @@ import matplotlib.pyplot as plt
 
 # Carga el dataset completo
 datos_completos = load_iris()
-X = datos_completos.data  # Obtiene las características
+X = datos_completos.data  # Obtiene las características (150 muestras x 4 variables)
 
-# Centrado de datos: resta la media de cada característica
+# Paso 1: Centrar datos restando la media de cada columna (variable)
 medias = np.mean(X, axis=0)
 X_centrado = X - medias
 
-# Cálculo de matriz de covarianza
+# Verifica que las medias de las columnas centradas estén (casi) en cero
+resultado_media = np.mean(X_centrado, axis=0)
+assert np.allclose(resultado_media, 0), "Las medias no están cerca de cero"
+print("  Verificación de centrado: OK")
+
+# Paso 2: Calcular la matriz de covarianza (muestra cómo varían juntas las variables)
 matriz_cov = np.cov(X_centrado.T)
 
-# Calcula valores y vectores propios
+# Paso 3: Obtener valores y vectores propios (eigen decomposition de la matriz de covarianza)
+# - Valores propios: varianza explicada por cada componente
+# - Vectores propios: direcciones (componentes principales)
 valores_propios, vectores_propios = np.linalg.eig(matriz_cov)
 
-# Ordena componentes principales por varianza descendente
+# Paso 4: Ordenar componentes principales por importancia (mayor varianza explicada)
 indices_ordenados = np.argsort(valores_propios)[::-1]
 vectores_propios_ordenados = vectores_propios[:, indices_ordenados]
 
-# Selecciona los dos primeros componentes
+# Paso 5: Seleccionar los dos primeros componentes principales (2D para graficar)
 matriz_w = vectores_propios_ordenados[:, 0:2]
 
-# Proyección de datos al espacio reducido (150x2)
+# Paso 6: Proyectar los datos centrados sobre los componentes seleccionados
+# Resultado: nueva representación en espacio reducido (150x2)
 X_pca = X_centrado @ matriz_w
 
-# Visualización de los datos proyectados
-plt.scatter(X_pca[:,0], X_pca[:,1])
+# --- Alternativa usando SVD (Descomposición en Valores Singulares) ---
+
+# Paso extra: Usar SVD en lugar de matriz de covarianza para obtener componentes principales
+U, s, Vh = np.linalg.svd(X_centrado, full_matrices=False)
+
+# Los vectores fila de Vh son los componentes principales (similares a vectores propios)
+W_svd = Vh.T
+matriz_w_final = W_svd[:, :2]  # Selecciona los primeros 2 componentes
+
+# Proyección de datos usando SVD
+X_pca_final = X_centrado @ matriz_w_final
+
+# Paso final alternativo: Visualización de los datos proyectados (en 2D)
+plt.scatter(X_pca_final[:,0], X_pca_final[:,1])
+plt.title('PCA del Dataset Iris Alternativo')
+plt.xlabel('Componente Principal 1')
+plt.ylabel('Componente Principal 2')
+plt.show() 
+
+
+# Paso final: Visualización de los datos proyectados (en 2D)
+plt.scatter(X_pca[:,0], X_pca_final[:,1])
+plt.title('PCA del Dataset Iris')
+plt.xlabel('Componente Principal 1')
+plt.ylabel('Componente Principal 2')
 plt.show()
