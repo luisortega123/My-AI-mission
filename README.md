@@ -1,12 +1,6 @@
 # My-AI-mission
 # Misión 1: Álgebra Lineal con Python Puro
 
-
-2. **$ \theta $**: Vector de parámetros (coeficientes).
-   - Contiene los pesos que el modelo aprende durante el entrenamiento.
-   - $ \theta_0 $: Intercepto (valor predicho cuando todas las características son cero).
-   - $ \theta_1, \theta_2, \dots $: Coeficientes que indican la influencia de cada característica en la predicción.
-
 Breve descripción del proyecto: Implementación de operaciones básicas de matrices (suma, multiplicación por escalar, multiplicación de matrices, traspuesta) usando solo Python, junto con la explicación de conceptos fundamentales.
 
 ## Código Python (`Algebra_lineal.py`)
