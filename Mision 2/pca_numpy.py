@@ -81,8 +81,10 @@ import matplotlib.pyplot as plt
 
 # Carga el dataset completo
 datos_completos = load_iris()
+# Matriz original
 X = datos_completos.data  # Obtiene las características (150 muestras x 4 variables)
-
+# Definimos un valor a K
+K = 2
 # Paso 1: Centrar datos restando la media de cada columna (variable)
 medias = np.mean(X, axis=0)
 X_centrado = X - medias
@@ -95,7 +97,7 @@ print("  Verificación de centrado: OK")
 # Paso 2: Calcular la matriz de covarianza (muestra cómo varían juntas las variables)
 matriz_cov = np.cov(X_centrado.T)
 
-# Paso 3: Obtener valores y vectores propios (eigen decomposition de la matriz de covarianza)
+# Paso 3: Obtener valores y vectores propios (eigen decomposicion de la matriz de covarianza)
 # - Valores propios: varianza explicada por cada componente
 # - Vectores propios: direcciones (componentes principales)
 valores_propios, vectores_propios = np.linalg.eig(matriz_cov)
@@ -103,13 +105,37 @@ valores_propios, vectores_propios = np.linalg.eig(matriz_cov)
 # Paso 4: Ordenar componentes principales por importancia (mayor varianza explicada)
 indices_ordenados = np.argsort(valores_propios)[::-1]
 vectores_propios_ordenados = vectores_propios[:, indices_ordenados]
-
+# Verificar no negatividad de valores propios
+assert np.all(valores_propios >= -1e-9), "Error: Se encontraron valores propios negativos"
+print("  Verificación de No negatividad: OK")
+#  Verificar usando NumPy que cada elemento es mayor o igual que el siguiente elemento en la lista
+valores_propios_ordenados = valores_propios[indices_ordenados]
+assert np.all(valores_propios_ordenados[: -1] >= valores_propios_ordenados[1:]), "Error: El elemento es mayor o igual que el siguiente elemento"
+print("  Verificación de es mayor o igual: OK")
+# Suma de Eigenvalues vs. Traza
+suma_valores_propios = np.sum(valores_propios)
+traza_matriz_cov = np.trace(matriz_cov)
+assert np.isclose(suma_valores_propios, traza_matriz_cov), "Error: No son iguales"
+print("  Verificación de suma vs traza: OK")
 # Paso 5: Seleccionar los dos primeros componentes principales (2D para graficar)
-matriz_w = vectores_propios_ordenados[:, 0:2]
-
+matriz_w = vectores_propios_ordenados[:, 0:K]
+# Asegurarnos que tengan norma unitaria (es decir, que su longitud o magnitud sea igual a 1).
+assert np.isclose(np.linalg.norm(matriz_w[:, 0]), 1.0), "Error: No cumplen con la norma unitaria" 
+assert np.isclose(np.linalg.norm(matriz_w[:, 1]), 1.0), "Error: El segundo componente principal no tiene norma unitaria"
+# Calcule el producto escalar entre el primer y segundo vector componente 
+producto_escalar = matriz_w[:, 0] @ matriz_w[:, 1]
+casi_cero = np.isclose(producto_escalar, 0.0)
+assert casi_cero, "Error: Los primeros dos componentes principales no son ortogonales (producto escalar no es cero)"
+# tambien puedes hacer esto(manera mas simplificada): 
+assert np.isclose(matriz_w[:, 0] @ matriz_w[:, 1], 0.0), "Error: Los primeros dos componentes principales no son ortogonales"
+print("Verificación de ortogonalidad PC1 vs PC2: OK")
 # Paso 6: Proyectar los datos centrados sobre los componentes seleccionados
 # Resultado: nueva representación en espacio reducido (150x2)
 X_pca = X_centrado @ matriz_w
+
+# Verificar las dimensiones de la matriz proyectada X_pca
+assert X_pca.shape == (X.shape[0], K), f"Error: La forma de X_pca no es la esperada. Esperada: {(X.shape[0], K)}, Obtenida: {X_pca.shape}"
+print(f"Verificación de forma X_pca ({K} componentes): OK") # Mensaje OK solo si el assert no falló
 
 # --- Alternativa usando SVD (Descomposición en Valores Singulares) ---
 
@@ -118,10 +144,28 @@ U, s, Vh = np.linalg.svd(X_centrado, full_matrices=False)
 
 # Los vectores fila de Vh son los componentes principales (similares a vectores propios)
 W_svd = Vh.T
-matriz_w_final = W_svd[:, :2]  # Selecciona los primeros 2 componentes
-
+matriz_w_final = W_svd[:, :K]  # Selecciona los primeros 2 componentes
+# Asegurarnos que tengan norma unitaria en SVD (es decir, que su longitud o magnitud sea igual a 1).
+assert np.isclose(np.linalg.norm(matriz_w_final[:, 0]), 1.0), "Error: No cumplen con la norma unitaria usando la alternativa SVD" 
+assert np.isclose(np.linalg.norm(matriz_w_final[:, 1]), 1.0), "Error: El segundo componente principal en SVD no tiene norma unitaria"
+# Calcule el producto escalar entre el primer y segundo vector componente alternativa (SVD)
+assert np.isclose(matriz_w_final[:, 0] @ matriz_w_final[:, 1], 0.0), "Error: Los primeros dos componentes principales no son ortogonales"
+print("Verificación de ortogonalidad usando (SVD) PC1 vs PC2: OK")
 # Proyección de datos usando SVD
 X_pca_final = X_centrado @ matriz_w_final
+
+# Verificar las dimensiones de la matriz proyectada X_pca_final (SVD)
+assert X_pca_final.shape == (X.shape[0], K), f"Error: La forma de X_pca no es la esperada. Esperada: {(X.shape[0], K)}, Obtenida: {X_pca_final.shape}"
+print(f"Verificación de forma X_pca_final ({K} componentes): OK") # Mensaje OK solo si el assert no falló
+
+
+# Paso final: Visualización de los datos proyectados (en 2D)
+plt.scatter(X_pca[:,0], X_pca[:,1])
+plt.title('PCA del Dataset Iris')
+plt.xlabel('Componente Principal 1')
+plt.ylabel('Componente Principal 2')
+#plt.show()
+
 
 # Paso final alternativo: Visualización de los datos proyectados (en 2D)
 plt.scatter(X_pca_final[:,0], X_pca_final[:,1])
@@ -129,11 +173,3 @@ plt.title('PCA del Dataset Iris Alternativo')
 plt.xlabel('Componente Principal 1')
 plt.ylabel('Componente Principal 2')
 plt.show() 
-
-
-# Paso final: Visualización de los datos proyectados (en 2D)
-plt.scatter(X_pca[:,0], X_pca_final[:,1])
-plt.title('PCA del Dataset Iris')
-plt.xlabel('Componente Principal 1')
-plt.ylabel('Componente Principal 2')
-plt.show()
