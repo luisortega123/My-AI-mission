@@ -520,3 +520,120 @@ La función `predecir(X_nuevos, theta_final, mu, sigma)` permite usar el modelo 
 Este modelo permite predecir el precio promedio de casas en California usando regresión lineal multivariable, correctamente entrenada y escalada.
 Con el descenso de gradiente y la MSE como guía, podemos ajustar $\theta$ hasta encontrar una solución eficiente y precisa.
 
+## Punto 1: Consolidar el Aprendizaje 🧠
+
+Dependiendo del valor de **alpha**, podemos observar cuánto tiempo tarda en **converger** el algoritmo.
+
+* Si el **alpha es muy pequeño**, el descenso de gradiente avanza muy lento.
+* Si el **alpha es muy grande**, el algoritmo puede **omitir el aprendizaje** o incluso **divergir** (los valores crecen en lugar de estabilizarse).
+
+📈
+*Figura 1*
+![alt text](Regresion_Lineal.py/Figure_1.png)
+
+Gracias a la comparación de los valores en la gráfica, podemos encontrar un **alpha ideal**:
+
+
+📉
+*Figura 2*
+![alt text](Regresion_Lineal.py/Figure_2.png)
+
+
+Sin el **escalado**, el descenso de gradiente tarda más o simplemente **no converge** (pueden aparecer datos 'null').
+En cambio, cuando **escalamos las características**:
+
+* Las variables tienen una magnitud parecida.
+* El algoritmo avanza mejor.
+* Se pueden usar valores de alpha más grandes sin que se vuelva inestable.
+* Todo converge de forma más rápida y eficiente.
+
+
+*Gráfico del historial de coste*
+![alt text](<Regresion_Lineal.py/Grafico Historial de coste.png>)
+
+
+### ✅ En resumen:
+
+* Escalar las características mejora la **eficiencia del algoritmo**.
+* Elegir bien el valor de **alpha** hace que el modelo **converja más rápido** sin salirse de control.
+
+##  Punto 2: Evaluar el Número de Iteraciones ⏱️
+
+Con distintos valores de alpha, podemos observar que, aproximadamente a partir de las 2500 iteraciones, las curvas comienzan a aplanarse. Esto indica que el algoritmo empieza a converger, ya que el coste deja de disminuir significativamente.
+
+En mi experimento utilicé 4000 iteraciones como número total. Elegí este valor porque, al probar varios valores de alpha, quería asegurarme de observar con claridad en qué punto cada curva se aplanaba por completo. Esto me permitió identificar con mayor precisión cuándo el algoritmo realmente comenzaba a converger en cada caso.
+
+![alt text](Regresion_Lineal.py/Figure_1.2.png)
+
+
+# Regresión Lineal: Ecuación Normal vs Descenso de Gradiente  
+
+
+## Estructura de la Matriz **X** y el Vector **y**  
+### **Matriz X (Diseño)**  
+- **Contenido**:  
+  - Columna de **unos (1)** para el intercepto ($\theta_0$).  
+  - Columnas de **características** ($X_1, X_2, \dots, X_n$).  
+- **Dimensiones**:  
+  $$
+  X \in \mathbb{R}^{m \times (n+1)} \quad \text{(m observaciones, n características)}
+  $$  
+
+### **Vector y (Objetivo)**  
+- **Contenido**: Valores reales a predecir.  
+- **Dimensiones**:  
+  $$
+  y \in \mathbb{R}^{m \times 1}
+  $$  
+
+
+
+## 🔍 **Comparaciones Clave**  
+### 📊 Resultados Experimentales  
+| **Escenario**            | Diferencia (Error) | Comparación Válida |  
+|--------------------------|--------------------|--------------------|  
+| Theta GD (escalado) vs Theta EN (**sin escalar**) | ≈ 111              | ❌ No (escalas distintas) |  
+| Theta GD (escalado) vs Theta EN (**escalado**)    | ≈ 9.9              | ✅ Sí               |  
+
+### ❓ **Interpretación**  
+1. **Diferencia ≈ 111**:  
+   - Ilustra cómo el **escalado afecta los valores absolutos de $\theta$**.  
+   - **No es válida técnicamente** (comparar $\theta$ en escalas diferentes no tiene sentido matemático).  
+
+2. **Diferencia ≈ 9.9**:  
+   - Muestra que el Descenso de Gradiente (**GD**) **no convergió totalmente** por falta de iteraciones.  
+
+
+---
+
+## 🧮 **Ecuación Normal: Fórmula e Implementación**  
+### **Fórmula Analítica**  
+$$
+\theta = (X^T X)^{-1} X^T y
+$$  
+
+### **Pasos de Implementación**  
+1. Calcular $X^T X$.  
+2. Invertir la matriz resultante.  
+3. Multiplicar por $X^T y$.  
+
+## ⚖️ **Pros y Contras**  
+| **Método**           | **Ecuación Normal**                              | **Descenso de Gradiente**                     |  
+|----------------------|------------------------------------------------|-----------------------------------------------|  
+| **Ventajas**         | - Solución exacta en 1 paso.<br>- Sin hiperparámetros.<br>- No requiere escalado. | - Escalable a grandes $n$.<br>- Funciona incluso si $X^T X$ es singular. |  
+| **Desventajas**      | - Coste $O(n^3)$ (lento para $n > 10^4$).<br>- Falla si $X^T X$ no es invertible. | - Necesita ajustar $\alpha$ e iteraciones.<br>- Requiere escalado para converger bien. |  
+
+---
+
+## 🚀 **¿Cuándo Usar Cada Método?**  
+| **Criterio**               | **Ecuación Normal**          | **Descenso de Gradiente**       |  
+|----------------------------|------------------------------|---------------------------------|  
+| **Número de características** | $n < 10^4$                 | $n \geq 10^4$                  |  
+| **Estabilidad matricial**  | Evitar si $X^T X$ es singular | Funciona siempre               |  
+| **Recursos computacionales** | Adecuado para CPU/GPU moderadas | Ideal para clusters distribuidos |  
+
+---
+
+**Notas Finales**:  
+- Usar `np.linalg.pinv` en lugar de `inv` para manejar matrices singulares.  
+- El escalado en GD es **crítico** para convergencia rápida y estable.  
