@@ -632,10 +632,6 @@ En mi experimento utilicé 4000 iteraciones como número total. Elegí este valo
 **Notas Finales**:  
 - Usar `np.linalg.pinv` en lugar de `inv` para manejar matrices singulares.  
 - El escalado en GD es **crítico** para convergencia rápida y estable.  
-```
 
----
 
-Este texto ahora será **100% visible y limpio en GitHub**.
 
-¿Quieres que te ayude a convertir esto también a un Jupyter Notebook o una presentación Markdown para mayor impacto visual?
