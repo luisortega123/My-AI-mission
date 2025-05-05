@@ -566,27 +566,21 @@ En mi experimento utilicé 4000 iteraciones como número total. Elegí este valo
 ![alt text](Regresion_Lineal.py/Figure_1.2.png)
 
 
-# Regresión Lineal: Ecuación Normal vs Descenso de Gradiente  
 
+# Regresión Lineal: Ecuación Normal vs Descenso de Gradiente  
 
 ## Estructura de la Matriz **X** y el Vector **y**  
 ### **Matriz X (Diseño)**  
 - **Contenido**:  
-  - Columna de **unos (1)** para el intercepto ($\theta_0$).  
-  - Columnas de **características** ($X_1, X_2, \dots, X_n$).  
+  - Columna de **unos (1)** para el intercepto (`θ₀`).  
+  - Columnas de **características** (`X₁, X₂, ..., Xₙ`).  
 - **Dimensiones**:  
-  $$
-  X \in \mathbb{R}^{m \times (n+1)} \quad \text{(m observaciones, n características)}
-  $$  
+  `m × (n+1)`  *(m observaciones, n características)*  
 
 ### **Vector y (Objetivo)**  
 - **Contenido**: Valores reales a predecir.  
 - **Dimensiones**:  
-  $$
-  y \in \mathbb{R}^{m \times 1}
-  $$  
-
-
+  `m × 1`  
 
 ## 🔍 **Comparaciones Clave**  
 ### 📊 Resultados Experimentales  
@@ -597,39 +591,40 @@ En mi experimento utilicé 4000 iteraciones como número total. Elegí este valo
 
 ### ❓ **Interpretación**  
 1. **Diferencia ≈ 111**:  
-   - Ilustra cómo el **escalado afecta los valores absolutos de $\theta$**.  
-   - **No es válida técnicamente** (comparar $\theta$ en escalas diferentes no tiene sentido matemático).  
+   - Ilustra cómo el **escalado afecta los valores absolutos de `θ`**.  
+   - **No es válida técnicamente** (comparar `θ` en escalas diferentes no tiene sentido matemático).  
 
 2. **Diferencia ≈ 9.9**:  
    - Muestra que el Descenso de Gradiente (**GD**) **no convergió totalmente** por falta de iteraciones.  
-
 
 ---
 
 ## 🧮 **Ecuación Normal: Fórmula e Implementación**  
 ### **Fórmula Analítica**  
-$$
-\theta = (X^T X)^{-1} X^T y
-$$  
+
+
+θ = (Xᵗ X)⁻¹ Xᵗ y
+
+
 
 ### **Pasos de Implementación**  
-1. Calcular $X^T X$.  
+1. Calcular `Xᵗ X`.  
 2. Invertir la matriz resultante.  
-3. Multiplicar por $X^T y$.  
+3. Multiplicar por `Xᵗ y`.  
 
 ## ⚖️ **Pros y Contras**  
 | **Método**           | **Ecuación Normal**                              | **Descenso de Gradiente**                     |  
-|----------------------|------------------------------------------------|-----------------------------------------------|  
-| **Ventajas**         | - Solución exacta en 1 paso.<br>- Sin hiperparámetros.<br>- No requiere escalado. | - Escalable a grandes $n$.<br>- Funciona incluso si $X^T X$ es singular. |  
-| **Desventajas**      | - Coste $O(n^3)$ (lento para $n > 10^4$).<br>- Falla si $X^T X$ no es invertible. | - Necesita ajustar $\alpha$ e iteraciones.<br>- Requiere escalado para converger bien. |  
+|----------------------|--------------------------------------------------|-----------------------------------------------|  
+| **Ventajas**         | - Solución exacta en 1 paso.<br>- Sin hiperparámetros.<br>- No requiere escalado. | - Escalable a grandes `n`.<br>- Funciona incluso si `Xᵗ X` es singular. |  
+| **Desventajas**      | - Coste `O(n³)` (lento para `n > 10⁴`).<br>- Falla si `Xᵗ X` no es invertible. | - Necesita ajustar `α` e iteraciones.<br>- Requiere escalado para converger bien. |  
 
 ---
 
 ## 🚀 **¿Cuándo Usar Cada Método?**  
 | **Criterio**               | **Ecuación Normal**          | **Descenso de Gradiente**       |  
 |----------------------------|------------------------------|---------------------------------|  
-| **Número de características** | $n < 10^4$                 | $n \geq 10^4$                  |  
-| **Estabilidad matricial**  | Evitar si $X^T X$ es singular | Funciona siempre               |  
+| **Número de características** | `n < 10⁴`                 | `n ≥ 10⁴`                      |  
+| **Estabilidad matricial**  | Evitar si `Xᵗ X` es singular | Funciona siempre               |  
 | **Recursos computacionales** | Adecuado para CPU/GPU moderadas | Ideal para clusters distribuidos |  
 
 ---
@@ -637,3 +632,10 @@ $$
 **Notas Finales**:  
 - Usar `np.linalg.pinv` en lugar de `inv` para manejar matrices singulares.  
 - El escalado en GD es **crítico** para convergencia rápida y estable.  
+```
+
+---
+
+Este texto ahora será **100% visible y limpio en GitHub**.
+
+¿Quieres que te ayude a convertir esto también a un Jupyter Notebook o una presentación Markdown para mayor impacto visual?
