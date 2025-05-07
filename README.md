@@ -496,7 +496,7 @@ Se implementó el **descenso de gradiente** para minimizar el error:
 Se definieron:
 
 * `theta_inicial`: vector de ceros
-* `$\alpha$` (tasa de aprendizaje)
+* $\theta$ (tasa de aprendizaje)
 * `n_iteraciones`
 
 También se graficó el **historial de coste** para visualizar la convergencia del algoritmo.
@@ -632,6 +632,277 @@ En mi experimento utilicé 4000 iteraciones como número total. Elegí este valo
 **Notas Finales**:  
 - Usar `np.linalg.pinv` en lugar de `inv` para manejar matrices singulares.  
 - El escalado en GD es **crítico** para convergencia rápida y estable.  
+
+
+# Tarea 5
+
+con esta tarea vamos a comprender e implementar la Regresión Logística desde cero para la clasificación binaria, entendiendo sus componentes matemáticos (función sigmoide, hipótesis, función de coste de entropía cruzada), cómo optimizarla con Descenso de Gradiente, y ser capaz de aplicarla y analizarla en un dataset.
+
+# 📘 Regresión Logística – Conceptos Clave
+
+## 🔧 Funciones a Implementar desde Cero
+1. Función Sigmoide g(z)
+2. Función de Hipótesis h(X, θ) (utiliza la sigmoide)
+3. Función de Coste J(X, y, θ) (Entropía Cruzada Binaria)
+4. Descenso de Gradiente (adaptado para clasificación)
+5. Función de Predicción (aplica umbral 0.5 para clasificar en 0 o 1)
+
+## 🔁 Función Sigmoide
+
+```math
+g(z) = \frac{1}{1 + e^{-z}}
+```
+
+* Convierte cualquier número (positivo o negativo) en un valor entre **0 y 1**.
+* Tiene forma de **S**, y sus salidas son utiles por que pueden interpretarse como **probabilidades**.
+* Por ejemplo, `g(0) = 0.5`, y si `z` es muy grande, `g(z)` se acerca a 1; si es muy pequeño, se acerca a 0. 
+
+
+---
+
+## 🧠 Función de Activación Sigmoide en Regresión Logística
+
+En la regresión logística, utilizamos la función sigmoide como función de activación para modelar probabilidades. Este proceso se puede describir en los siguientes pasos:
+
+1. **Calcular la Entrada `z`**
+
+   Se calcula como el producto escalar entre los parámetros y las características:
+
+   $$
+   z = \theta^T x
+   $$
+
+   > Este valor puede ser cualquier número real: positivo, negativo o cero.
+
+2. **Aplicar la Función Sigmoide**
+
+   La función sigmoide toma `z` como entrada y devuelve un valor entre 0 y 1:
+
+   $$
+   g(z) = \frac{1}{1 + e^{-z}}
+   $$
+
+3. **Interpretar la Salida como Probabilidad**
+
+   La salida de la función sigmoide se interpreta como la **probabilidad estimada** de que la observación pertenezca a la clase positiva (clase 1):
+
+   $$
+   h_\theta(x) = g(\theta^T x) \approx P(y = 1 \mid x; \theta)
+   $$
+
+---
+
+
+## 🧠 Hipótesis del Modelo
+
+```math
+h_\theta(x) = g(\theta^T x)
+```
+
+* Esta fórmula se encarga de **hacer predicciones**.
+* Multiplicamos los datos de entrada por los parámetros (`θ`) y aplicamos la función sigmoide.
+* El resultado es una **probabilidad** de que la salida sea `1`.
+  Ejemplo: si `hθ(x) = 0.8`, el modelo predice un **80% de probabilidad** de que `y = 1`.
+
+---
+
+## 💰 Función de Coste (Binary Cross-Entropy)
+
+```math
+J(\theta) = -\frac{1}{m} \sum_{i=1}^m \left[ y^{(i)} \log(h_\theta(x^{(i)})) + (1 - y^{(i)}) \log(1 - h_\theta(x^{(i)})) \right]
+```
+
+* Nos dice **qué tan mal está funcionando el modelo**.
+* Penaliza más fuerte cuando el modelo está seguro y se equivoca.
+* Evitamos usar el **Error Cuadrático Medio (MSE)**, porque no se adapta bien a clasificación.
+
+---
+
+## 📉 Descenso de Gradiente
+
+* Es el método que usamos para **encontrar los mejores parámetros** (`θ`).
+* Calcula **qué tan lejos estamos** del mínimo de la función de coste.
+* Da pasos pequeños en la dirección correcta para **mejorar el modelo**.
+* Aunque usamos la sigmoide, la fórmula del gradiente se mantiene **muy parecida** a la de regresión lineal, lo cual simplifica la implementación.
+
+---
+
+## 🧭 Límite de Decisión
+
+* Es la **frontera que separa las dos clases** (por ejemplo, spam vs no spam).
+* Si `hθ(x) ≥ 0.5`, clasificamos como **1**; si es menor, como **0**.
+* En un espacio 2D, es una **línea recta**; en espacios con más dimensiones, es un **hiperplano**.
+
+---
+
+## ⚙️ Consideraciones Prácticas
+
+* 🔧 **Umbral ajustable**: El valor de 0.5 puede cambiarse según el problema (por ejemplo, para priorizar sensibilidad en medicina).
+* 🧯 **Regularización**: Podemos añadir términos (L1 o L2) a la función de coste para **evitar el sobreajuste** (*overfitting*).
+* 🎯 **Clasificación multiclase**: Se puede extender usando **Softmax** o estrategias **One-vs-Rest**.
+
+
+
+
+
+### Comparación con Otros Métodos
+
+| Característica              | Regresión Logística          | LDA / QDA                                                         |
+| --------------------------- | ---------------------------- | ----------------------------------------------------------------- |
+| Supuestos sobre los datos   | No hace suposiciones fuertes | Asume que los datos tienen forma de campana (distribución normal) |
+| Frontera de decisión        | Recta (lineal)               | Recta o curva (cuadrática)                                        |
+| Cómo calcula probabilidades | Directamente con la sigmoide | Basado en fórmulas estadísticas más complejas                     |
+ 
+## Pasos a seguir en la interacion de GD: 
+
+
+
+### 🔄 Ciclo del Descenso de Gradiente
+
+En cada iteración del algoritmo de optimización se repiten los siguientes pasos:
+
+1. **Calcular la Hipótesis**
+   Se calcula $z = X\theta$ (o $\theta^T X$ si $X$ es una sola muestra), y luego se aplica la función sigmoide:
+
+   $$
+   h_\theta(X) = g(z)
+   $$
+
+   Esto nos da las probabilidades estimadas para cada muestra.
+
+2. **Calcular el Error**
+   Se obtiene la diferencia entre las predicciones y los valores reales:
+
+   $$
+   \text{errores} = h_\theta(X) - y
+   $$
+
+3. **Calcular el Gradiente**
+   Se calcula usando la fórmula vectorizada:
+
+   $$
+   \nabla J(\theta) = \frac{1}{m} X^T \cdot \text{errores}
+   $$
+
+4. **Actualizar los Parámetros $\theta$**
+   Se ajustan los parámetros para minimizar la función de coste:
+
+   $$
+   \theta := \theta - \alpha \cdot \nabla J(\theta)
+   $$
+
+
+
+# 📘 Pasos del Algoritmo de Regresión Logística (`load_breast_cancer`)
+
+
+## 🔢 Función sigmoide
+
+Para empezar, definimos la **función sigmoide**, que convierte cualquier número en un valor entre 0 y 1. Esto es muy útil para interpretar resultados como **probabilidades**.
+
+Hice una lista de valores $z$ y apliqué la sigmoide para ver los resultados. Algunos puntos clave que me tengo que acordar:
+
+* Si $z = 0$, la sigmoide da $0.5$.
+* Si $z$ es muy grande, se acerca a $1.0$.
+* Si $z$ es muy negativo, se acerca a $0.0$.
+
+Fórmula:
+
+$$
+g(z) = \frac{1}{1 + e^{-z}}
+$$
+
+---
+
+## 📈 Función de hipótesis $h_\theta(x)$
+
+Ya habíamos visto esta función antes, pero ahora la usamos junto con la sigmoide para obtener una **matriz de probabilidades**.
+
+La fórmula general es:
+
+$$
+h_\theta(x) = g(\theta^T x)
+$$
+
+---
+
+## 💰 Función de coste (entropía cruzada binaria)
+
+Para medir qué tan bien está aprendiendo el modelo, usamos la **entropía cruzada**, que castiga más cuando el modelo se equivoca con confianza.
+
+$$
+J(\theta) = -\frac{1}{m} \sum \left[ y \log(h_\theta(x)) + (1 - y) \log(1 - h_\theta(x)) \right]
+$$
+
+Agregamos un pequeño valor $\varepsilon$ para evitar errores como dividir entre cero o calcular $\log(0)$. Ese valor es tan pequeño que no afecta el resultado final, pero ayuda a evitar problemas numéricos.
+
+---
+
+## 📉 Descenso de Gradiente (GD)
+
+Esta función sirve para ajustar los parámetros $\theta$ y minimizar el error.
+
+Primero calculamos el **gradiente**:
+
+$$
+\nabla J(\theta) = \frac{1}{m} X^T (h_\theta(X) - y)
+$$
+
+Y luego actualizamos los parámetros con:
+
+$$
+\theta := \theta - \alpha \cdot \nabla J(\theta)
+$$
+
+Probé con varios valores de $\alpha$ (la tasa de aprendizaje) y vi cuál hacía que la curva de pérdida bajara más rápido y luego se estabilizara. Ese fue el mejor.
+
+---
+
+## 🚀 Empieza el entrenamiento
+
+Cargué los datos desde `sklearn.datasets.load_breast_cancer` y seguí estos pasos:
+
+* Escalé todas las características para que el modelo aprenda mejor.
+* Agregué una columna de unos al dataset para que el modelo aprenda también el **intercepto** $\theta_0$, lo que le da más libertad para ajustar la curva.
+* Usé un valor de $\alpha$ que funcionara bien y un número razonable de iteraciones (basado en cómo se ve la curva de pérdida).
+
+Todo esto me permitió entrenar el modelo y practicar la función `predict`.
+
+### Visualización del entrenamiento
+
+Comparé la evolución del error y el efecto de distintos valores de $\alpha$:
+
+![Curva de pérdida vs iteraciones](Regresion_Logisitica/Figure_2.png)
+
+![Comparación de tasas de aprendizaje](Regresion_Logisitica/Figure_1.png)
+
+---
+
+## ✅ Función predecir
+
+Con la hipótesis $h_\theta(x)$, calculamos probabilidades y luego usamos un **umbral** de 0.5 para convertir eso en una decisión:
+
+* Si $h_\theta(x) \geq 0.5$ → predice clase **1**.
+* Si $h_\theta(x) < 0.5$ → predice clase **0**.
+
+Esto nos da una predicción binaria clara.
+
+---
+
+## 🎯 Accuracy del modelo
+
+Para saber qué tan bien aprendió el modelo, calculé el **accuracy**, que es el porcentaje de predicciones correctas.
+
+En este caso, obtuve:
+
+$$
+\text{Accuracy} = 97.01\%
+$$
+
+También probé una forma alternativa de calcularlo con menos pasos, solo para recordar que se puede hacer lo mismo de distintas maneras.
+
+
+
 
 
 
