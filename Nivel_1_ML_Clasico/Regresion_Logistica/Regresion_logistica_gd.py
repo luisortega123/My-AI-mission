@@ -4,6 +4,8 @@ from sklearn.datasets import load_breast_cancer
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
+from sklearn.metrics import classification_report
+
 
 
 # =========================================
@@ -369,3 +371,14 @@ print(f"F1 Score: {f1_logreg_test:.4f}")
 print("--- F1 Score (Train Set) ---")
 print(f"F1 Score: {f1_logreg_train:.4f}")
 
+# =========================================================
+# --- Classification Report for Logistic Regression ---
+# =========================================================
+
+print("\n---  Classification Report (Test Set) ---")
+cl_report_test = classification_report(y_test, y_class_pred_test_logreg)
+print(cl_report_test)
+
+print("\n---  Clasiification Report (Train Set) ---")
+cl_report_train = classification_report(y_train, y_class_pred_train_logreg)
+print(cl_report_train)

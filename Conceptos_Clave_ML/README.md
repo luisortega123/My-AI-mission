@@ -1481,3 +1481,13 @@ Claro, aquí tienes una interpretación detallada para la tabla de regresión, s
 * La decisión final puede depender del contexto clínico y del costo asociado a los errores de clasificación.
 
 ---
+
+
+
+## Resumen de  Métricas de Evaluación en Clasificación Binaria: Precision, Recall y F1-Score
+
+| Métrica   | Se enfoca en...                           | Qué quiere evitar                 |
+| --------- | ----------------------------------------- | --------------------------------- |
+| Precision | Predicciones positivas correctas          | Falsos positivos                  |
+| Recall    | Positivos reales correctamente detectados | Falsos negativos                  |
+| F1        | Balance entre Precision y Recall          | Cuando uno de los dos falla mucho |

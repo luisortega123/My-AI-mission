@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import pandas as pd
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
+from sklearn.metrics import classification_report
 # Load dataset
 data = load_breast_cancer()
 X = data.data
@@ -221,9 +222,9 @@ accuracy_best_train = best_svc_model.score(X_train, y_train)
 
 print("\n--- Calculate evaluation metrics ---")
 
-print("--- Calculate Accuracy (Test Set) ---")
+print("--- Accuracy (Test Set) ---")
 print(f"Accuracy Score:\n{accuracy_best_test:.4f}")
-print("--- Calculate Accuracy (Train Set) ---")
+print("--- Accuracy (Train Set) ---")
 print(f"Accuracy Score:\n{accuracy_best_train:.4f}")
 
 print("--- Matriz de Confusión (Test Set) ---")
@@ -257,3 +258,16 @@ print(f"F1 Score: {f1_best_test:.4f}")
 print("--- F1 Score (Train Set) ---")
 f1_best_train = f1_score(y_train, y_pred_train_best_svc)
 print(f"F1 Score: {f1_best_train:.4f}")
+
+
+# =========================================================
+# --- Classification Report for SVC ---
+# =========================================================
+
+print("\n---  Classification Report (Test Set) ---")
+cl_report_test = classification_report(y_test, y_pred_test_best_svc)
+print(cl_report_test)
+
+print("\n---  Clasiification Report (Train Set) ---")
+cl_report_train = classification_report(y_train, y_pred_train_best_svc)
+print(cl_report_train)
