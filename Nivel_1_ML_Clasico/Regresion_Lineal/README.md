@@ -2,7 +2,7 @@
 
 ## ¿Qué es?
 
-La **regresión lineal** es una técnica estadística que busca la relación entre una variable cuantitativa ($Y$) y una o más variables predictoras ($X$).
+La **regresión lineal** es una técnica estadística que busca la relación entre una variable cuantitativa $Y$ y una o más variables predictoras ($X$).
 El **objetivo** es **predecir valores numéricos continuos**, basándose en la suposición de que existe una relación lineal entre las variables explicativas ($X$) y la variable objetivo ($Y$).
 
 ---
