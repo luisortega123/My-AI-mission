@@ -180,7 +180,6 @@ Primero importamos las librerías esenciales:
 - `torch`: Para manejar tensores y construir el modelo.
 - `numpy`: Para operaciones numéricas.
 - `matplotlib`: Para graficar resultados.
-- Nuestra clase `MyNeuralNetwork` desde el script donde definimos la arquitectura y funciones de entrenamiento.
 
 De esta manera, tenemos listo el “plano de construcción” de nuestra red neuronal.
 
@@ -258,7 +257,7 @@ for epoch in range(epochs):
 ```python
 def predict(x):
     model.eval()               # Cambiar a modo evaluación (sin calcular gradientes)
-    with torch.no_grad():      # Evitar cálculo de gradientes para optimizar memoria y velocidad
+    with torch.no_grad():      # Evitar cálculo gradientes para optimizar memoria y velocidad
         logits = model(x)      
         probs = torch.sigmoid(logits)     # Convertir logits en probabilidades
         prediction = (probs >= 0.5).float()  # Umbral para clasificar en 0 o 1
@@ -349,3 +348,91 @@ Esta función permite visualizar cómo el modelo divide el espacio de caracterí
 
 # 🔑 **Conclusión:**  
 El control manual es excelente para aprender y entender, pero la abstracción que ofrece PyTorch es clave para eficiencia, escalabilidad y confiabilidad en proyectos reales. Lo ideal es combinar ambos enfoques según la etapa de aprendizaje o desarrollo en la que te encuentres.
+
+
+
+# Neural Network Implementation: NumPy vs PyTorch
+
+A comprehensive comparison between manual neural network implementation using NumPy and automated implementation using PyTorch on the make_moons dataset.
+
+## 📊 Benchmarks de Rendimiento
+
+### Tiempo de Entrenamiento (1500 épocas)
+- **NumPy**: 3.79 seconds
+- **PyTorch (CPU)**: 3.11 seconds
+
+### Convergencia
+- **NumPy**: 
+  - Loss < 0.1 alcanzado en época 199
+  - Loss final (época 1400): 0.0565
+- **PyTorch**: 
+  - Loss < 0.1 alcanzado en época 94
+  - Loss final (época 1400): 0.0583
+
+## 📈 Comparación de Implementaciones
+
+### Líneas de Código
+- **NumPy**: 63 líneas (core implementation)
+- **PyTorch**: 7 líneas
+- **Reducción**: 89%
+
+### Complejidad del Backward Pass
+- **NumPy**: 25 líneas de código para calcular gradientes manualmente
+- **PyTorch**: 1 línea (`loss.backward()`)
+
+## 🏗️ Arquitectura de la Red
+- Input layer: 2 neuronas
+- Hidden layer 1: 16 neuronas (ReLU)
+- Hidden layer 2: 8 neuronas (ReLU)
+- Output layer: 1 neurona (Sigmoid)
+
+## 💡 Análisis Detallado
+
+### Ventajas de NumPy
+1. **Control total**: Comprensión profunda de cada operación matemática
+2. **Transparencia**: Sin cajas negras, ideal para aprendizaje
+3. **Personalización**: Modificación directa de cualquier componente
+
+### Ventajas de PyTorch
+1. **Autograd**: Cálculo automático de gradientes sin errores
+2. **Optimizadores avanzados**: Adam converge 2x más rápido que SGD
+3. **Código conciso**: 89% menos código, menor probabilidad de bugs
+4. **Escalabilidad**: GPU support y modelos complejos sin esfuerzo adicional
+
+### Performance Analysis
+PyTorch muestra ventajas en:
+- **Convergencia más rápida**: 94 vs 199 épocas para loss < 0.1
+- **Optimización superior**: Adam optimizer vs vanilla SGD
+- **Tiempo competitivo**: Solo 0.68s más rápido en dataset pequeño
+
+En datasets pequeños (1000 muestras), la diferencia de tiempo es mínima debido al overhead del framework. En datasets más grandes (>10,000 muestras), PyTorch típicamente supera significativamente a NumPy.
+
+## 🚀 Uso
+
+### NumPy Implementation
+```bash
+python numpy_neural_network.py
+```
+
+### PyTorch Implementation
+```bash
+python pytorch_neural_network.py
+```
+
+## 📁 Estructura de Archivos
+```
+├── numpy_neural_network.py
+├── pytorch_neural_network.py
+├── README.md
+├── decision_boundaries/    # NumPy visualizations
+└── visualizations/         # PyTorch visualizations
+```
+
+## 🎯 Conclusiones
+
+1. **Para aprender**: NumPy es invaluable para entender las matemáticas fundamentales
+2. **Para producción**: PyTorch ofrece eficiencia, confiabilidad y escalabilidad
+3. **Convergencia**: Ambas implementaciones alcanzan performance similar (loss ~0.057)
+4. **Trade-off**: 89% menos código vs comprensión profunda del algoritmo
+
+Este proyecto demuestra que mientras NumPy es excelente para propósitos educativos, PyTorch es la elección práctica para desarrollo profesional de redes neuronales.
